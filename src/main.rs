@@ -1,31 +1,32 @@
-use resnet_burn::model::{imagenet, resnet:Resnet}; 
+use resnet_burn::model::{imagenet, resnet::ResNet};
 
 use burn::{
-    backend::NdArray, 
-    module::Module, 
-    record::{FullPrecisionSettings, NamedMpkFileRecorder, Recorder}, 
-    tensor::{backend::Backend, Data, Device, Tensor, Element, Shape},
-}; 
+    backend::NdArray,
+    module::Module,
+    record::{FullPrecisionSettings, NamedMpkFileRecorder, Recorder},
+    tensor::{backend::Backend, Data, Device, Element, Shape, Tensor},
+};
+use burn_import::pytorch::{LoadArgs, PyTorchFileRecorder};
 
-use burn_import::pytorch::{LoadArgs, PyTorchFileRecorder}; 
-
-const TORCH_WEIGHTS: &str = "resnet18-f37072fd.pth"; 
-const MODEL_PATH: &str = "resnet18-ImageNet1k"; 
-const HEIGHT: usize = 224; 
-const WIDTH: usize = 224; 
+const TORCH_WEIGHTS: &str = "resnet18-f37072fd.pth";
+const MODEL_PATH: &str = "resnet18-ImageNet1k";
+const HEIGHT: usize = 224;
+const WIDTH: usize = 224;
 
 fn to_tensor<B: Backend, T: Element>(
-    data: Vec<T>, 
-    shape: [usize; 3], 
+    data: Vec<T>,
+    shape: [usize; 3],
     device: &Device<B>,
 ) -> Tensor<B, 3> {
-    Tensor::<B, 3>::from_data(data, Shape::new(shape)).convert(), device)
-    .swap_dims(2, 1)
-    .swap_dims(1, 0)
-    / 255
+    Tensor::<B, 3>::from_data(Data::new(data, Shape::new(shape)).convert(), device)
+        // permute(2, 0, 1)
+        .swap_dims(2, 1) // [H, C, W]
+        .swap_dims(1, 0) // [C, H, W]
+        / 255 // normalize between [0, 1]
 }
 
 fn main() {
+    // Create ResNet-18 for ImageNet (1k classes)
     let device = Default::default();
     let model: ResNet<NdArray, _> = ResNet::resnet18(1000, &device);
 

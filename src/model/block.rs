@@ -1,26 +1,27 @@
-use core::marker::PhantomData; 
+use core::marker::PhantomData;
 
 use burn::{
-    module::Module, 
-    nn:{
+    module::Module,
+    nn::{
         conv::{Conv2d, Conv2dConfig},
-        BatchNorm, BatchNormConfig, PaddingConfig, ReLU,
+        BatchNorm, BatchNormConfig, PaddingConfig2d, ReLU,
     },
-    tensor::{backend::Backend, Device, Tensor}, 
-}; 
+    tensor::{backend::Backend, Device, Tensor},
+};
 
-//ResNet implementation from paper 
-
-#[derive(Module, Debug)] 
+/// ResNet [basic residual block](https://paperswithcode.com/method/residual-block) implementation.
+#[derive(Module, Debug)]
 pub struct BasicBlock<B: Backend> {
     conv1: Conv2d<B>,
-    bn1: BatchNorm<B, 2>, 
+    bn1: BatchNorm<B, 2>,
     relu: ReLU,
     conv2: Conv2d<B>,
-    bn2: BatchNorm<B, 2>, 
-    downsample: Option<Downsample<B>>, 
+    bn2: BatchNorm<B, 2>,
+    downsample: Option<Downsample<B>>,
 }
 
+/// ResNet [bottleneck residual block](https://paperswithcode.com/method/bottleneck-residual-block)
+/// implementation.
 #[derive(Module, Debug)]
 pub struct Bottleneck<B: Backend> {
     conv1: Conv2d<B>,
@@ -33,6 +34,7 @@ pub struct Bottleneck<B: Backend> {
     downsample: Option<Downsample<B>>,
 }
 
+/// Downsample layer applies a 1x1 conv to reduce the resolution (H, W) and adjust the number of channels.
 #[derive(Module, Debug)]
 pub struct Downsample<B: Backend> {
     conv: Conv2d<B>,
@@ -58,6 +60,8 @@ impl<B: Backend> Downsample<B> {
     }
 }
 
+/// Residual blocks are the building blocks of residual networks (ResNets).
+/// The blocks use skip connections to learn residual functions with reference to the layer inputs.
 pub trait ResidualBlock<B: Backend> {
     fn init(in_channels: usize, out_channels: usize, stride: usize, device: &Device<B>) -> Self;
     fn forward(&self, input: Tensor<B, 4>) -> Tensor<B, 4>;
@@ -98,6 +102,7 @@ impl<B: Backend> ResidualBlock<B> for BasicBlock<B> {
             downsample,
         }
     }
+
     fn forward(&self, input: Tensor<B, 4>) -> Tensor<B, 4> {
         let identity = input.clone();
 

@@ -1,26 +1,26 @@
 use burn::{
-    module::Module, 
+    module::Module,
     nn::{
         conv::{Conv2d, Conv2dConfig},
         pool::{AdaptiveAvgPool2d, AdaptiveAvgPool2dConfig, MaxPool2d, MaxPool2dConfig},
         BatchNorm, BatchNormConfig, Linear, LinearConfig, PaddingConfig2d, ReLU,
-    }, 
-    tensor::{backend::Backend, Device, Tensor}, 
-}; 
+    },
+    tensor::{backend::Backend, Device, Tensor},
+};
 
-use super::block::{BasicBlock, Bottleneck, LayerBlock, ResidualBlock}; 
+use super::block::{BasicBlock, Bottleneck, LayerBlock, ResidualBlock};
 
-#[derive(Module, Debug)] 
+#[derive(Module, Debug)]
 pub struct ResNet<B: Backend, M> {
     conv1: Conv2d<B>,
-    bn1: BatchNorm<B, 2>, 
+    bn1: BatchNorm<B, 2>,
     relu: ReLU,
-    maxpool: MaxPool2d,  
+    maxpool: MaxPool2d,
     layer1: LayerBlock<B, M>,
     layer2: LayerBlock<B, M>,
     layer3: LayerBlock<B, M>,
     layer4: LayerBlock<B, M>,
-    avgpool: AdaptiveAvgPool2d, 
+    avgpool: AdaptiveAvgPool2d,
     fc: Linear<B>,
 }
 
