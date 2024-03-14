@@ -1,13 +1,6 @@
-# **👉 [Check out the full tutorial](https://dev.to/laggui/transitioning-from-pytorch-to-burn-45m) 👈**
+## ResNet + Burn 
 
-## ResNet + Burn ✍️
-
-To use ResNet in your application, take a look at the official Burn implementation
-[available on GitHub](https://github.com/tracel-ai/models/tree/main/resnet-burn)! It closely follows
-this tutorial's implementation but further extends it to provide an easy interface to load the
-pre-trained weights for the whole ResNet family of models.
-
-## Example Usage
+### How to test it out ? 
 
 1. Download the ResNet-18 pre-trained weights from `torchvision`
 
@@ -26,3 +19,4 @@ wget https://upload.wikimedia.org/wikipedia/commons/2/26/YellowLabradorLooking_n
 ```sh
 cargo run --release YellowLabradorLooking_new.jpg
 ```
+
