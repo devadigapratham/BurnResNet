@@ -22,7 +22,7 @@ fn to_tensor<B: Backend, T: Element>(
         // permute(2, 0, 1)
         .swap_dims(2, 1) // [H, C, W]
         .swap_dims(1, 0) // [C, H, W]
-        / 255 // normalize between [0, 1]
+        / 255 // normalize between [0, 1] //Testing 
 }
 
 fn main() {
